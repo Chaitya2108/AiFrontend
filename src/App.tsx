@@ -1,46 +1,58 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {Table,Avatar,Button} from "antd";
 import {columns} from './components/columns'
+import { fetchData } from './fetchData';
 
 const App = () => {
-  const [dataSource, setDataSource] = useState([])
+  const [dataSource, setDataSource] = useState<any[]>([])
+  // const fetchAndAssign = async() => {
+  //   const data = await fetchData()
+  //   setDataSource(data)
+  // };
+  // const fetchAndAssign = useCallback(async () => {
+  //   const data = await fetchData()
+  //   setDataSource(data)
+  // }, [])
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  // useEffect(() => {
+  //   fetchAndAssign();
+  // }, [fetchAndAssign])
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('https://random-data-api.com/api/v2/users?size=10')
-      if (!response.ok) {
-        throw new Error('could not fetch data')
-      }
-      const data = await response.json()
-      const formattedData = data.map((item:any) => ({
-        key: item.id,
-        first_name: item.first_name,
-        last_name: item.last_name,
-        email: item.email,
-        // avatar: <img src={item.avatar} style={{maxHeight:"100px"}}/>
-        avatar: <Avatar src={item.avatar} size='large'/>
-      }))
-      setDataSource(formattedData)
-    }
-    catch (error) {
-      console.error('error found')
-    }
+  // const buttonClicked = () => {
+  //   fetchAndAssign()
+  // }
+  const fetchAndAssign = async () => {
+    await new Promise(resolve => setTimeout(resolve, 200));
+    const data = await fetchData()
+    console.log(data)
+    setDataSource(data)
   }
 
+  useEffect(() => {
+    fetchAndAssign()
+    console.log(dataSource)
+  }, [])
+
   const buttonClicked = () => {
-    fetchData()
+    fetchAndAssign()
   }
   return (
     <div className="App">
       <header className="App-header">
-        <Button type='primary' onClick={buttonClicked}>Fetch Data</Button>
-        <Table dataSource={dataSource} columns={columns} pagination={false} />     
+        <Button type='primary' onClick={buttonClicked} style={{marginBottom:"2vh",marginTop:"2vh"}}>Fetch Data</Button>
+        {/* {
+          (dataSource != undefined) && (
+            <Table dataSource={dataSource} columns={columns} pagination={false} /> 
+          )
+        } */}
+        <Table dataSource={dataSource} columns={columns} pagination={false} /> 
+        
+        
+          
+        
+            
       </header>
     </div>
   );
